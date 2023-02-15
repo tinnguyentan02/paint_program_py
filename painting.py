@@ -5,13 +5,13 @@ pygame.init()
 fps = 240
 timer = pygame.time.Clock()
 WIDTH = 800
-HEIGHT = 600
+HEIGHT = 870
 active_size = 0
 active_color = 'white'
 painting = []
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Paint!')
-
+my_font = pygame.font.SysFont('Comic Sans MS', 20)
 
 def draw_menu():
     pygame.draw.rect(screen, 'gray', [0, 0, WIDTH, 70])
@@ -33,15 +33,34 @@ def draw_menu():
     yellow = pygame.draw.rect(screen, (255, 255, 0), [WIDTH - 125, 10, 25, 25])
     teal = pygame.draw.rect(screen, (0, 255, 255), [WIDTH - 35, 40, 25, 25])
     purple = pygame.draw.rect(screen, (255, 0, 255), [WIDTH - 65, 40, 25, 25])
-    white = pygame.draw.rect(screen, (0, 0, 0), [WIDTH - 95, 40, 25, 25])
-    black = pygame.draw.rect(screen, (255, 255, 255), [WIDTH - 125, 40, 25, 25])
+    white = pygame.draw.rect(screen, (255, 255, 255), [WIDTH - 95, 40, 25, 25])
+    black = pygame.draw.rect(screen, (0, 0, 0), [WIDTH - 125, 40, 25, 25])
     color_rect = [blue, red, green, yellow, teal, purple, white, black]
     rgb_list = [(0, 0, 255), (255, 0, 0), (0, 255, 0), (255, 255, 0), (0, 255, 255), (255, 0, 255), (0, 0, 0),  (255, 255, 255)]
     return brush_list, color_rect, rgb_list
+
+
+def done_button():
+    done_coordinate = pygame.draw.rect(screen, 'black', [300, 10, 100, 50])
+    text_surface = my_font.render('Done', False, (255, 255, 255))
+    screen.blit(text_surface, (325, 20))
+    return done_coordinate
+
+def exit_button():
+    exit_coordinate = pygame.draw.rect(screen, 'black', [420, 10, 100, 50])
+    text_surface = my_font.render('Exit', False, (255, 255, 255))
+    screen.blit(text_surface, (445, 20))
+    return exit_coordinate
     
 def draw_painting(paints):
     for i in range(len(paints)):
           pygame.draw.circle(screen, paints[i][0], paints[i][1], paints[i][2])
+
+def Capture(screen, name, pos, size):
+    img = pygame.Surface(size)
+    img.blit(screen, (0, 0), (pos, size))
+    pygame.image.save(img, name)
+    
 run = True
 while run:
     timer.tick(fps)                                    # fps in game
@@ -58,6 +77,8 @@ while run:
         pygame.draw.circle(screen, active_color, mouse_coordinate, active_size)
     
     brushes, colors, rgb = draw_menu()
+    done, exit =  done_button(), exit_button()
+
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -71,5 +92,13 @@ while run:
                 if colors[i].collidepoint(event.pos):        # to take the color of brush
                     active_color = rgb[i]
                     
+            if(done.collidepoint(event.pos)):                # 
+                Capture(screen, 'img.jpg', (0, 70), (800, 800))
+                run = False
+                
+            if(exit.collidepoint(event.pos)):   
+                run = False
+            
     pygame.display.flip()
 pygame.quit()
+    
